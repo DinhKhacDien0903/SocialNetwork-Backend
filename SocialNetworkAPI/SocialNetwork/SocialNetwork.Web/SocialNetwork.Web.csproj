@@ -38,7 +38,8 @@
     <ProjectReference Include="..\SocialNetwork.Domain\SocialNetwork.Domain.csproj" />
     <ProjectReference Include="..\SocialNetwork.DTOs\SocialNetwork.DTOs.csproj" />
     <ProjectReference Include="..\SocialNetwork.Helpers\SocialNetwork.Helpers.csproj" />
-    <ProjectReference Include="..\SocialNetwork.Services\SocialNetwork.Services.csproj" />
+	<ProjectReference Include="..\SocialNetwork.Services\SocialNetwork.Services.csproj" />
+
   </ItemGroup>
 
 </Project>

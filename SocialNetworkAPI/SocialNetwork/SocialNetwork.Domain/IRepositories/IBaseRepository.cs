@@ -4,15 +4,13 @@
     {
         Task<IEnumerable<T>> GetAllAsync();
 
-        Task<T> GetByIDAsync(string id);
-
+        Task<T> GetByIDAsync(string id);  
         Task<T> AddAsync(T entity);
 
         void Update(T entity);
 
-        void Delete(T Entity);
+        void Delete(T entity);
 
         Task SaveChangeAsync();
-
     }
 }

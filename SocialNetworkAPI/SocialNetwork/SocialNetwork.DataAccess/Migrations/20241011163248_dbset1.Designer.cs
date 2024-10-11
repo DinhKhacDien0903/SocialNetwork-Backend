@@ -12,8 +12,8 @@ using SocialNetwork.DataAccess.DataContext;
 namespace SocialNetwork.DataAccess.Migrations
 {
     [DbContext(typeof(SocialNetworkdDataContext))]
-    [Migration("20241005111702_update")]
-    partial class update
+    [Migration("20241011163248_dbset1")]
+    partial class dbset1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -105,10 +105,12 @@ namespace SocialNetwork.DataAccess.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
                     b.Property<string>("LoginProvider")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("ProviderKey")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("ProviderDisplayName")
                         .HasColumnType("nvarchar(max)");
@@ -145,10 +147,12 @@ namespace SocialNetwork.DataAccess.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("LoginProvider")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("Value")
                         .HasColumnType("nvarchar(max)");
@@ -475,7 +479,6 @@ namespace SocialNetwork.DataAccess.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Content")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreatedAt")
@@ -885,8 +888,9 @@ namespace SocialNetwork.DataAccess.Migrations
             modelBuilder.Entity("SocialNetwork.Domain.Entities.CommentEntity", b =>
                 {
                     b.HasOne("SocialNetwork.Domain.Entities.CommentEntity", "ParentComment")
-                        .WithMany()
-                        .HasForeignKey("ParentCommentID");
+                        .WithMany("Replies")
+                        .HasForeignKey("ParentCommentID")
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("SocialNetwork.Domain.Entities.PostEntity", "Post")
                         .WithMany()
@@ -897,7 +901,7 @@ namespace SocialNetwork.DataAccess.Migrations
                     b.HasOne("SocialNetwork.Domain.Entities.UserEntity", "User")
                         .WithMany()
                         .HasForeignKey("UserID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("ParentComment");
@@ -956,7 +960,7 @@ namespace SocialNetwork.DataAccess.Migrations
                     b.HasOne("SocialNetwork.Domain.Entities.UserEntity", "User")
                         .WithMany()
                         .HasForeignKey("UserID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("GroupChatMessage");
@@ -975,7 +979,7 @@ namespace SocialNetwork.DataAccess.Migrations
                     b.HasOne("SocialNetwork.Domain.Entities.UserEntity", "User")
                         .WithMany()
                         .HasForeignKey("UserID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("GroupChatMessage");
@@ -986,7 +990,7 @@ namespace SocialNetwork.DataAccess.Migrations
             modelBuilder.Entity("SocialNetwork.Domain.Entities.ImagesOfPostEntity", b =>
                 {
                     b.HasOne("SocialNetwork.Domain.Entities.PostEntity", "Post")
-                        .WithMany()
+                        .WithMany("Images")
                         .HasForeignKey("PostID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1021,7 +1025,7 @@ namespace SocialNetwork.DataAccess.Migrations
                     b.HasOne("SocialNetwork.Domain.Entities.UserEntity", "Receiver")
                         .WithMany()
                         .HasForeignKey("ReciverID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("SocialNetwork.Domain.Entities.UserEntity", "Sender")
@@ -1057,7 +1061,7 @@ namespace SocialNetwork.DataAccess.Migrations
                     b.HasOne("SocialNetwork.Domain.Entities.ReactionEntity", "Reaction")
                         .WithMany()
                         .HasForeignKey("ReactionID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Comment");
@@ -1095,7 +1099,7 @@ namespace SocialNetwork.DataAccess.Migrations
                     b.HasOne("SocialNetwork.Domain.Entities.ReactionEntity", "Reaction")
                         .WithMany()
                         .HasForeignKey("ReactionID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("GroupChatMessage");
@@ -1114,7 +1118,7 @@ namespace SocialNetwork.DataAccess.Migrations
                     b.HasOne("SocialNetwork.Domain.Entities.ReactionEntity", "Reaction")
                         .WithMany()
                         .HasForeignKey("ReactionID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Message");
@@ -1133,7 +1137,7 @@ namespace SocialNetwork.DataAccess.Migrations
                     b.HasOne("SocialNetwork.Domain.Entities.ReactionEntity", "Reaction")
                         .WithMany()
                         .HasForeignKey("ReactionID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Post");
@@ -1163,7 +1167,7 @@ namespace SocialNetwork.DataAccess.Migrations
                     b.HasOne("SocialNetwork.Domain.Entities.UserEntity", "User")
                         .WithMany()
                         .HasForeignKey("UserID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Friend");
@@ -1182,7 +1186,7 @@ namespace SocialNetwork.DataAccess.Migrations
                     b.HasOne("SocialNetwork.Domain.Entities.UserEntity", "Sender")
                         .WithMany()
                         .HasForeignKey("SenderID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Receiver");
@@ -1207,6 +1211,16 @@ namespace SocialNetwork.DataAccess.Migrations
                     b.Navigation("Role");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("SocialNetwork.Domain.Entities.CommentEntity", b =>
+                {
+                    b.Navigation("Replies");
+                });
+
+            modelBuilder.Entity("SocialNetwork.Domain.Entities.PostEntity", b =>
+                {
+                    b.Navigation("Images");
                 });
 #pragma warning restore 612, 618
         }

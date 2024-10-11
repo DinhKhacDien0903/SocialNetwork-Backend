@@ -9,13 +9,14 @@ namespace SocialNetwork.Web.Controllers
     public class PostController : ControllerBase
     {
         private readonly IPostService _postService;
+        private readonly IPostHubService _postHubService;
 
-        public PostController(IPostService postService)
+        public PostController(IPostService postService, IPostHubService postHubService)
         {
             _postService = postService;
+            _postHubService = postHubService;
         }
 
-        // Lấy tất cả các bài viết
         [HttpGet]
         public async Task<ActionResult<IEnumerable<PostViewModel>>> GetAllPosts()
         {
@@ -23,7 +24,6 @@ namespace SocialNetwork.Web.Controllers
             return Ok(posts);
         }
 
-        // Lấy bài viết theo ID
         [HttpGet("{id}")]
         public async Task<ActionResult<PostViewModel>> GetPostById(Guid id)
         {
@@ -35,6 +35,9 @@ namespace SocialNetwork.Web.Controllers
             return Ok(post);
         }
 
+
+
+
         [HttpPost]
         public async Task<ActionResult<PostRequest>> CreatePost(PostRequest postViewModel)
         {
@@ -44,12 +47,15 @@ namespace SocialNetwork.Web.Controllers
             }
 
             var createdPost = await _postService.CreatePostAsync(postViewModel);
+
+            await _postHubService.SendPostAsycn(createdPost);
+
+            // Sử dụng new { id = createdPost.PostID } để chỉ định tham số cho route
             return Ok(createdPost);
         }
 
 
 
-        // Cập nhật bài viết
         [HttpPut("{id}")]
         public async Task<ActionResult<PostViewModel>> UpdatePost(Guid id, [FromBody] PostViewModel postViewModel)
         {
@@ -58,7 +64,7 @@ namespace SocialNetwork.Web.Controllers
                 return BadRequest(ModelState);
             }
 
-            postViewModel.PostID = id; // Đảm bảo ID trong URL và body khớp nhau
+            postViewModel.PostID = id; 
             var updatedPost = await _postService.UpdatePostAsync(postViewModel);
             if (updatedPost == null)
             {
@@ -68,7 +74,6 @@ namespace SocialNetwork.Web.Controllers
             return Ok(updatedPost);
         }
 
-        // Xóa bài viết (soft delete)
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeletePost(Guid id)
         {

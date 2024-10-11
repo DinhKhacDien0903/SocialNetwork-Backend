@@ -1,11 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
 namespace SocialNetwork.DataAccess.Migrations
 {
     /// <inheritdoc />
-    public partial class createdatabase : Migration
+    public partial class dbset1 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -72,6 +73,12 @@ namespace SocialNetwork.DataAccess.Migrations
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     LastLogin = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    FirstName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    LastName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    Address = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    AvatarUrl = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    Gender = table.Column<bool>(type: "bit", nullable: true),
+                    DateOfBirth = table.Column<DateTime>(type: "datetime2", nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -188,14 +195,13 @@ namespace SocialNetwork.DataAccess.Migrations
                         name: "FK_Messages_Users_ReciverID",
                         column: x => x.ReciverID,
                         principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Messages_Users_SenderID",
                         column: x => x.SenderID,
                         principalTable: "Users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -204,7 +210,7 @@ namespace SocialNetwork.DataAccess.Migrations
                 {
                     PostID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     UserID = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Content = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     IsDelete = table.Column<bool>(type: "bit", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
@@ -257,6 +263,7 @@ namespace SocialNetwork.DataAccess.Migrations
                     Token = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
                     JwtID = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
                     IsUsed = table.Column<bool>(type: "bit", nullable: false),
+                    IsRevoked = table.Column<bool>(type: "bit", nullable: false),
                     ExpiredAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
@@ -295,7 +302,7 @@ namespace SocialNetwork.DataAccess.Migrations
                         column: x => x.UserID,
                         principalTable: "Users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -325,7 +332,7 @@ namespace SocialNetwork.DataAccess.Migrations
                         column: x => x.SenderID,
                         principalTable: "Users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -353,8 +360,8 @@ namespace SocialNetwork.DataAccess.Migrations
                 name: "UserLogins",
                 columns: table => new
                 {
-                    LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    ProviderKey = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    LoginProvider = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
+                    ProviderKey = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
                     ProviderDisplayName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
@@ -390,7 +397,7 @@ namespace SocialNetwork.DataAccess.Migrations
                         column: x => x.UserID,
                         principalTable: "Users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -414,7 +421,7 @@ namespace SocialNetwork.DataAccess.Migrations
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -422,8 +429,8 @@ namespace SocialNetwork.DataAccess.Migrations
                 columns: table => new
                 {
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    LoginProvider = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
                     Value = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
@@ -461,7 +468,7 @@ namespace SocialNetwork.DataAccess.Migrations
                         column: x => x.UserID,
                         principalTable: "Users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -488,7 +495,7 @@ namespace SocialNetwork.DataAccess.Migrations
                         column: x => x.UserID,
                         principalTable: "Users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -562,8 +569,7 @@ namespace SocialNetwork.DataAccess.Migrations
                         name: "FK_Comments_Users_UserID",
                         column: x => x.UserID,
                         principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -608,8 +614,7 @@ namespace SocialNetwork.DataAccess.Migrations
                         name: "FK_ReactionGroupChatMessages_Reactions_ReactionID",
                         column: x => x.ReactionID,
                         principalTable: "Reactions",
-                        principalColumn: "ReactionID",
-                        onDelete: ReferentialAction.NoAction);
+                        principalColumn: "ReactionID");
                 });
 
             migrationBuilder.CreateTable(
@@ -632,8 +637,7 @@ namespace SocialNetwork.DataAccess.Migrations
                         name: "FK_ReactionMessages_Reactions_ReactionID",
                         column: x => x.ReactionID,
                         principalTable: "Reactions",
-                        principalColumn: "ReactionID",
-                        onDelete: ReferentialAction.NoAction);
+                        principalColumn: "ReactionID");
                 });
 
             migrationBuilder.CreateTable(
@@ -656,8 +660,7 @@ namespace SocialNetwork.DataAccess.Migrations
                         name: "FK_ReactionPosts_Reactions_ReactionID",
                         column: x => x.ReactionID,
                         principalTable: "Reactions",
-                        principalColumn: "ReactionID",
-                        onDelete: ReferentialAction.NoAction);
+                        principalColumn: "ReactionID");
                 });
 
             migrationBuilder.CreateTable(
@@ -680,8 +683,7 @@ namespace SocialNetwork.DataAccess.Migrations
                         name: "FK_ReactionComments_Reactions_ReactionID",
                         column: x => x.ReactionID,
                         principalTable: "Reactions",
-                        principalColumn: "ReactionID",
-                        onDelete: ReferentialAction.NoAction);
+                        principalColumn: "ReactionID");
                 });
 
             migrationBuilder.CreateIndex(

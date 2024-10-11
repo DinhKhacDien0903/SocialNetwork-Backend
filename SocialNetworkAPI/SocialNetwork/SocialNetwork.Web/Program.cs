@@ -7,7 +7,9 @@ using Microsoft.OpenApi.Models;
 using SocialNetwork.DataAccess.SeedData;
 using SocialNetwork.Domain.Entities;
 using SocialNetwork.DTOs.Authorize;
+using SocialNetwork.Helpers.Hubs;
 using SocialNetwork.Services.AuttoMapper;
+using SocialNetwork.Web.Dependencies;
 using SocialNetwork.Web.Hubs;
 using SocialNetwork.Web.Middlewares;
 
@@ -30,121 +32,42 @@ builder.Services.AddIdentity<UserEntity, IdentityRole>(options =>
 }).AddEntityFrameworkStores<SocialNetworkdDataContext>()
     .AddDefaultTokenProviders();
 
-builder.Services.AddDbContext<SocialNetworkdDataContext>(options =>
-{
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
-});
+//builder.Services.AddDbContext<SocialNetworkdDataContext>(options =>
+//{
+//    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+//});
+
+builder.Services.AddDatabase(builder.Configuration);
 
 builder.Services.AddScoped<IPasswordHasher<IdentityUser>, PasswordHasher<IdentityUser>>();
-builder.Services.AddScoped<IPostRepository, PostRepository>();
-builder.Services.AddScoped<ICommentRepositories, CommentRepositories>();
-builder.Services.AddScoped<ICommentService, CommentService>();
-
-//builder.Services.AddIdentity<IdentityUser, IdentityRole>()
-//            .AddEntityFrameworkStores<SocialNetworkdDataContext>()
-//            .AddDefaultTokenProviders();
+builder.Services.AddMapper();
+builder.Services.AddRepository();
+builder.Services.AddService();
 
 builder.Services.Configure<JwtConfig>(builder.Configuration.GetSection("JwtConfig"));
 
-builder.Services.AddAutoMapper(typeof(Program));
-builder.Services.AddAutoMapper(typeof(AutoMapperConfig));
-
-builder.Services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
-builder.Services.AddScoped(typeof(IUserRepository), typeof(UserRepository));
-builder.Services.AddScoped(typeof(IRefreshTokenRepository),typeof(RefreshTokenRepository));
-builder.Services.AddScoped(typeof(IMessageRepository),typeof(MessageRepository));
-
-builder.Services.AddScoped(typeof(IUserService), typeof(UserService));
-builder.Services.AddScoped(typeof(IRefreshTokenService), typeof(RefreshTokenService));
-builder.Services.AddScoped(typeof(IAuthorService), typeof(AuthorService));
-builder.Services.AddScoped(typeof(IChatHubService), typeof(ChatHubService));
-
 
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddScoped(typeof(IPostService), typeof(PostService));
-builder.Services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
+builder.Services.AddAuthenticationToken(builder.Configuration);
+builder.Services.AddSwaggerGen_();
 
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-}).AddCookie(opt =>
-{
-    opt.Cookie.Name = "token";
-})
-    
-    .AddJwtBearer(opt =>
-{
-    opt.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidateIssuer = false,
-        ValidateAudience = false,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
-        ValidIssuer = builder.Configuration["Jwt:Issuer"],
-        ValidAudience = builder.Configuration["Jwt:Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:SecretKey"] ?? string.Empty)),
-        ClockSkew = TimeSpan.Zero
-    };
+//builder.Services.AddCors(options =>
+//{
+//    options.AddPolicy("AllowAllOrigins",
+//        builder =>
+//        {
+//            builder.WithOrigins("http://localhost:3000")
+//                  .AllowAnyHeader()
+//                  .AllowAnyMethod()
+//                  .AllowCredentials();
+//        });
+//});
 
-    opt.Events = new JwtBearerEvents
-    {
-        OnMessageReceived = context =>
-        {
-            context.Token = context.Request.Cookies["token"];
-            return Task.CompletedTask;
-        }
-    };
+//builder.Services.AddSignalR();//-----
 
-}).AddGoogle(options =>
-{
-    options.ClientId = builder.Configuration["GoogleAuthSetting:ClientID"];
-    options.ClientSecret = builder.Configuration["GoogleAuthSetting:ClientSecret"];
-    options.CallbackPath = "/signin-google";
-});
+builder.Services.AddSignalR_();
 
-builder.Services.AddSwaggerGen(c =>
-{
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "SocialNetwork.Web", Version = "v1" });
-    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-    {
-        Description = "JWT Authorization header using the Bearer scheme!",
-        Name = "Authorization",
-        In = ParameterLocation.Header,
-        Type = SecuritySchemeType.ApiKey,
-        Scheme = "Bearer"
-    });
 
-    c.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
-        {
-            new OpenApiSecurityScheme
-            {
-                Reference = new OpenApiReference
-                {
-                    Type = ReferenceType.SecurityScheme,
-                    Id = "Bearer"
-                }
-            },
-            new string [] {}
-        }
-    });
-});
-
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowAllOrigins",
-        builder =>
-        {
-            builder.WithOrigins("http://localhost:3000")
-                  .AllowAnyHeader()
-                  .AllowAnyMethod()
-                  .AllowCredentials();
-        });
-});
-
-builder.Services.AddSignalR();
 
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
@@ -202,5 +125,77 @@ app.MapControllers();
 
 app.MapHub<ChatHub>("/chatPerson");
 
+app.MapHub<PostHub>("/postUser");
+
 app.Run();
 
+
+
+
+//builder.Services.AddAuthentication(options =>
+//{
+//    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+//    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+//    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+//}).AddCookie(opt =>
+//{
+//    opt.Cookie.Name = "token";
+//})
+
+//    .AddJwtBearer(opt =>
+//{
+//    opt.TokenValidationParameters = new TokenValidationParameters
+//    {
+//        ValidateIssuer = false,
+//        ValidateAudience = false,
+//        ValidateLifetime = true,
+//        ValidateIssuerSigningKey = true,
+//        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+//        ValidAudience = builder.Configuration["Jwt:Audience"],
+//        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:SecretKey"] ?? string.Empty)),
+//        ClockSkew = TimeSpan.Zero
+//    };
+
+//    opt.Events = new JwtBearerEvents
+//    {
+//        OnMessageReceived = context =>
+//        {
+//            context.Token = context.Request.Cookies["token"];
+//            return Task.CompletedTask;
+//        }
+//    };
+
+//}).AddGoogle(options =>
+//{
+//    options.ClientId = builder.Configuration["GoogleAuthSetting:ClientID"];
+//    options.ClientSecret = builder.Configuration["GoogleAuthSetting:ClientSecret"];
+//    options.CallbackPath = "/signin-google";
+//});
+
+//builder.Services.AddSwaggerGen(c =>
+//{
+//    c.SwaggerDoc("v1", new OpenApiInfo { Title = "SocialNetwork.Web", Version = "v1" });
+//    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+//    {
+//        Description = "JWT Authorization header using the Bearer scheme!",
+//        Name = "Authorization",
+//        In = ParameterLocation.Header,
+//        Type = SecuritySchemeType.ApiKey,
+//        Scheme = "Bearer"
+//    });
+
+//    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+//    {
+//        {
+//            new OpenApiSecurityScheme
+//            {
+//                Reference = new OpenApiReference
+//                {
+//                    Type = ReferenceType.SecurityScheme,
+//                    Id = "Bearer"
+//                }
+//            },
+//            new string [] {}
+//        }
+//    });
+//});

@@ -58,7 +58,7 @@ namespace SocialNetwork.Services.Services
 
         public async Task<CommentViewModel> UpdateCommentAsycm(Guid commentId, CommentViewModel comment)
         {
-            var commentEntity = await _commentRepositories.GetCommentByIdAsync(comment.CommentID);
+            var commentEntity = await _commentRepositories.GetCommentByIdAsync(commentId);
             if (commentEntity == null)
             {
                 throw new Exception("Comment not found");

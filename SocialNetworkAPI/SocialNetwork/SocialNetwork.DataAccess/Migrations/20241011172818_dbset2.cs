@@ -5,7 +5,7 @@
 namespace SocialNetwork.DataAccess.Migrations
 {
     /// <inheritdoc />
-    public partial class update : Migration
+    public partial class dbset2 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
