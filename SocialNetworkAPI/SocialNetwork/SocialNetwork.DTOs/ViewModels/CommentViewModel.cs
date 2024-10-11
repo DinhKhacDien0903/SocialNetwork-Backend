@@ -10,7 +10,6 @@ namespace SocialNetwork.DTOs.ViewModels
 {
     public class CommentViewModel
     {
-        public Guid CommentID { get; set; }
 
         public string UserID { get; set; }
 

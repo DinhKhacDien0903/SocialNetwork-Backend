@@ -8,13 +8,13 @@
         [Required]
         public string UserID { get; set; }
 
-        [Required]
-        public string Content { get; set; }
+        //[Required]
+        public string? Content { get; set; }
 
-        public bool IsDelete { get; set; } = false;
+        public bool IsDelete { get; set; }
 
         [ForeignKey("UserID")]
-        public UserEntity? User { get; set; } = new UserEntity();
+        public UserEntity? User { get; set; } /*= new UserEntity()*/
 
         public ICollection<ImagesOfPostEntity> Images { get; set; } = new List<ImagesOfPostEntity>();
 

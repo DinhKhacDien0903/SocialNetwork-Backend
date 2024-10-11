@@ -14,6 +14,6 @@
         public bool IsDeleted { get; set; } = false;
 
         [ForeignKey("PostID")]
-        public PostEntity? Post { get; set; } = new PostEntity();
+        public PostEntity? Post { get; set; } 
     }
 }

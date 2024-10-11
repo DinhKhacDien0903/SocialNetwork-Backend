@@ -43,7 +43,7 @@ namespace SocialNetwork.Web.Controllers
             
 
             var createdComment = await _commentService.AddCommentAsycn(commentViewModel);
-            return CreatedAtAction(nameof(GetCommentByPostId), new { commentId = createdComment.CommentID }, createdComment);
+            return Ok(createdComment);
         }
 
         [HttpPut("commentId")]  

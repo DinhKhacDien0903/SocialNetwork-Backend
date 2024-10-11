@@ -11,10 +11,9 @@ namespace SocialNetwork.DTOs.Request
     public class PostRequest
     {
         [Required(ErrorMessage = "UserID is required.")]
-        public string UserID { get; set; }
+        public string? UserID { get; set; }
 
-        [Required(ErrorMessage = "Content is required.")]
-        public string Content { get; set; }
+        public string? Content { get; set; }
 
         public bool IsDelete { get; set; } = false;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
